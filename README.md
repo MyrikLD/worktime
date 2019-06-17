@@ -4,14 +4,12 @@ Working time tracker
 ## Run service
 worktimer.py
 
-## Show today status
-worktimer.py show
+usage: worktimer.py [-h] [--show] [--mouth] [--set {work,home}]
+                    [--track TRACK]
 
-## Show mouth stats
-worktimer.py mouth
-
-## Set this wifi as work/home
-worktimer.py set [work, home]
-
-## Log full workday
-worktimer.py + 01.01.1993
+optional arguments:
+  -h, --help         show this help message and exit
+  --show, --today    Show today status
+  --mouth            Show mouth statistic
+  --set {work,home}  Set current wifi as...
+  --track TRACK      Track this date as working day
