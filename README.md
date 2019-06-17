@@ -5,7 +5,7 @@ Working time tracker
 worktimer.py
 
 usage: worktimer.py [-h] [--show] [--mouth] [--set {work,home}]
-                    [--track TRACK]
+                    [--track DATE]
 
 optional arguments:
 
@@ -17,4 +17,4 @@ optional arguments:
   
   --set {work,home}  Set current wifi as...
   
-  --track TRACK      Track this date as working day
+  --track DATE      Track this date as working day
