@@ -2,16 +2,18 @@
 
 import sys
 from datetime import date, datetime, timedelta
+import psutil
 
 import arrow
 
 import django_init
 from helpers.notifier import Notify
+from helpers.lock_detect import is_locked
 from worktimer.models import Tick, Wifi
 
 _ = django_init.application
 
-WORKDAY = timedelta(hours=8, minutes=30)
+WORKDAY = timedelta(hours=8)
 UTC_FIX = timedelta(hours=3)
 
 
@@ -25,9 +27,13 @@ def main():
         today = Tick.today()
         stats = IwConfig().interfaces
         wifi = Wifi.from_conf(stats.popitem()[1])
+        locked = is_locked()
 
         if today.count() == 0:
-            Tick.objects.create(wifi=wifi)
+            Tick.create(
+                wifi=wifi,
+                state=last.State.REST if locked else None
+            )
 
         if today.filter(wifi__state=Wifi.State.WORK).count() == 0 and wifi.state == Wifi.State.WORK:
             work_start = datetime.now().replace(microsecond=0) + UTC_FIX
@@ -35,18 +41,25 @@ def main():
             WORKDAY_END = False
 
         last = today.last()
-        if last.wifi_id != wifi.id:
-            if wifi.id == 1:
-                Notify.show('WORK', f'Wifi disconnected')
-            else:
-                Notify.show('WORK', f'Changed to {wifi.essid}')
+        if last.wifi_id != wifi.id or locked != (last.state == last.State.REST):
+            if last.wifi_id != wifi.id:
+                if wifi.id == 1:
+                    Notify.show('WORK', 'Wifi disconnected')
+                else:
+                    Notify.show('WORK', f'Changed to {wifi.essid}')
 
-            if last.wifi.state == Wifi.State.WORK and wifi.state == Wifi.State.HOME:
-                Notify.show('WORK', 'Welcome home')
-                worktime = Tick.work_time(today)
-                Notify.show('Добро пожаловать', f'\nЗа сегодня: {worktime}', 'kmousetool_off')
-
-            Tick.objects.create(wifi=wifi)
+                if last.wifi.state == Wifi.State.WORK and wifi.state == Wifi.State.HOME:
+                    Notify.show('WORK', 'Welcome home')
+                    worktime = Tick.work_time(today)
+                    Notify.show(
+                        'Добро пожаловать', 
+                        f'\nЗа сегодня: {worktime}', 
+                        'kmousetool_off'
+                    )
+            Tick.create(
+                wifi=wifi, 
+                state=last.State.REST if locked else None
+            )
         else:
             last.end = datetime.now()
             last.save()
