@@ -1,10 +1,11 @@
-# worktime
+# Worktime
 Working time tracker
 
 ## Run service
 worktimer.py
 
-usage: worktimer.py [-h] [--show] [--mouth] [--set {work,home}]
+## Usage
+worktimer.py [-h] [--show] [--mouth] [--set {work,home}]
                     [--track DATE]
 
 optional arguments:
