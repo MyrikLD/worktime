@@ -1,7 +1,7 @@
 # Worktime
 Working time tracker
 
-## Run service
+## Run as service
 worktimer.py
 
 ## Usage
