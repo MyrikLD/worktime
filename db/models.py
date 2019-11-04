@@ -1,3 +1,4 @@
+import os
 from datetime import date, timedelta, datetime
 from typing import List, Tuple
 
@@ -5,64 +6,13 @@ from sqlalchemy import Column, DateTime, ForeignKey, Boolean
 from sqlalchemy import Integer, Unicode, Enum
 from sqlalchemy import and_
 from sqlalchemy import create_engine
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy.orm import sessionmaker, joinedload, relationship
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.orm.session import Session
+
+from db.base import Base, States
 
 
 def strip_time(x):
     return x - timedelta(microseconds=x.microseconds)
-
-
-@as_declarative()
-class Base:
-    session: Session
-
-    id = Column(Integer, primary_key=True)
-
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
-
-    def save(self):
-        self.session.commit()
-
-    def delete(self):
-        self.session.delete(self)
-
-    @classmethod
-    def get_or_create(cls, defaults=None, **kwargs):
-        """
-        Get or create a model instance while preserving integrity.
-        """
-        s = cls.session
-
-        try:
-            return s.query(cls).filter_by(**kwargs).one(), False
-        except NoResultFound:
-            if defaults is not None:
-                kwargs.update(defaults)
-            try:
-                with s.begin_nested():
-                    instance = cls(**kwargs)
-                    s.add(instance)
-                    s.commit()
-                    return instance, True
-            except IntegrityError:
-                return s.query(cls).filter_by(**kwargs).one(), False
-
-
-class States:
-    UNKNOWN = 'UNKNOWN'
-    WORK = 'WORK'
-    HOME = 'HOME'
-    REST = 'REST'
-
-    @classmethod
-    def keys(cls):
-        return cls.UNKNOWN, cls.WORK, cls.HOME, cls.REST
 
 
 class Wifi(Base):
@@ -151,6 +101,8 @@ class Tick(Base):
     def __repr__(self):
         return f'Tick[{self.wifi.essid}]({strip_time(self.timedelta())})'
 
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 engine = create_engine('sqlite:///db.sqlite')
 

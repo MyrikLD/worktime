@@ -1,9 +1,5 @@
 from datetime import datetime, timedelta
 
-from helpers.lock_detect import is_locked
-from helpers.notifier import Notify
-from worktimer.models import Tick, Wifi, States
-
 WORKDAY = timedelta(hours=8)
 UTC_FIX = timedelta(hours=3)
 
@@ -11,8 +7,11 @@ UTC_FIX = timedelta(hours=3)
 def worker():
     from time import sleep
     from helpers.iwconfig import IwConfig
+    from helpers.lock_detect import is_locked
+    from helpers.notifier import Notify
+    from db.models import Tick, Wifi, States
 
-    WORKDAY_END = False
+    workday_end = False
 
     while True:
         today = Tick.today()
@@ -28,7 +27,7 @@ def worker():
         if not work_today and wifi.state == States.WORK:
             work_start = datetime.now().replace(microsecond=0) + UTC_FIX
             Notify.show('WORK', f'Рабочий день начался {work_start}', 'emoticon')
-            WORKDAY_END = False
+            workday_end = False
 
         last = today[-1] if len(today) else None
         if last.wifi_id != wifi.id or locked != (last.wifi.state == States.REST):
@@ -56,8 +55,8 @@ def worker():
             last.session.commit()
 
         worktime = Tick.work_time(today)
-        if worktime >= WORKDAY and not WORKDAY_END:
+        if worktime >= WORKDAY and not workday_end:
             Notify.show('Рабочий день окончен', f'Потрачено: {worktime}', 'kmousetool_off')
-            WORKDAY_END = True
+            workday_end = True
 
         sleep(5)

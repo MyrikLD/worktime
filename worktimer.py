@@ -1,4 +1,5 @@
 #!/bin/python3
+
 import argparse
 from datetime import date, timedelta
 
@@ -6,7 +7,7 @@ import arrow
 
 from helpers.notifier import Notify
 from worker import worker, WORKDAY
-from worktimer.models import Tick, Wifi, States
+from db.models import Tick, Wifi, States
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Working time tracker')
