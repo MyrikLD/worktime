@@ -2,6 +2,7 @@ import os
 from datetime import date, timedelta, datetime
 from typing import List, Tuple
 
+import sqlalchemy
 from sqlalchemy import Column, DateTime, ForeignKey, Boolean
 from sqlalchemy import Integer, Unicode, Enum
 from sqlalchemy import and_
@@ -17,7 +18,7 @@ def strip_time(x):
 
 class Wifi(Base):
     essid = Column(Unicode(40))
-    bssid = Column(Unicode(17))
+    bssid = Column(Unicode(17), nullable=True)
     state = Column(Enum(*States.keys()), server_default=States.WORK)
     ticks = relationship("Tick", back_populates="wifi")
 
@@ -106,7 +107,16 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 engine = create_engine('sqlite:///db.sqlite')
 
+Base.metadata.create_all(engine)
+
 session = sessionmaker(autocommit=False, autoflush=False)
 session.configure(bind=engine)
-Base.metadata.create_all(engine)
+
 Base.session = session()
+
+q = sqlalchemy.insert(Wifi).values(
+    {'id': 0, 'essid': '', 'bssid': None, 'state': States.REST}
+).prefix_with('OR IGNORE')
+
+Base.session.execute(q)
+Base.session.commit()

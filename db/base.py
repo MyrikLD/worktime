@@ -1,4 +1,4 @@
-from sqlalchemy import Column
+from sqlalchemy import Column, MetaData
 from sqlalchemy import Integer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
@@ -9,6 +9,7 @@ from sqlalchemy.orm.session import Session
 @as_declarative()
 class Base:
     session: Session
+    metadata: MetaData
 
     id = Column(Integer, primary_key=True)
 
@@ -38,8 +39,8 @@ class Base:
                 with s.begin_nested():
                     instance = cls(**kwargs)
                     s.add(instance)
-                    s.commit()
-                    return instance, True
+                s.commit()
+                return instance, True
             except IntegrityError:
                 return s.query(cls).filter_by(**kwargs).one(), False
 

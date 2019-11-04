@@ -21,9 +21,9 @@ if __name__ == "__main__":
         tw = Tick.today()
         worktime = Tick.work_time(tw)
         if tw and tw[-1].wifi.state == States.WORK:
-            Notify.show('Рабочий день в процессе', f'Потрачено: {worktime}')
+            Notify.show(f'Work in progress: {tw[-1].wifi.essid}', f'Spent: {worktime}')
         else:
-            Notify.show('Отдых', f'Потрачено: {worktime}')
+            Notify.show(f'Rest: {tw[-1].wifi.essid}', f'Spent: {worktime}')
     elif args.mouth:
         from itertools import groupby
 
