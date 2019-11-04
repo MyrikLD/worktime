@@ -53,7 +53,7 @@ if __name__ == "__main__":
     elif args.set:
         wifi = Tick.today()[-1].wifi
         state = args.set.upper()
-        if wifi.id == 1:
+        if wifi.id == 0:
             print(f'Wifi disconnected!')
         elif state in (States.WORK, States.HOME):
             wifi.state = state

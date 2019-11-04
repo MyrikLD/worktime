@@ -26,7 +26,7 @@ def worker():
         work_today = [i for i in today if i.wifi.state is States.WORK]
         if not work_today and wifi.state == States.WORK:
             work_start = datetime.now().replace(microsecond=0) + UTC_FIX
-            Notify.show('WORK', f'Рабочий день начался {work_start}', 'emoticon')
+            Notify.show('WORK', f'Workday started at {work_start}', 'emoticon')
             workday_end = False
 
         last = today[-1] if len(today) else None
@@ -41,8 +41,8 @@ def worker():
                     Notify.show('WORK', 'Welcome home')
                     worktime = Tick.work_time(today)
                     Notify.show(
-                        'Добро пожаловать',
-                        f'\nЗа сегодня: {worktime}',
+                        'Welcome',
+                        f'\nSpent: {worktime}',
                         'kmousetool_off'
                     )
             Tick.create(
@@ -56,7 +56,7 @@ def worker():
 
         worktime = Tick.work_time(today)
         if worktime >= WORKDAY and not workday_end:
-            Notify.show('Рабочий день окончен', f'Потрачено: {worktime}', 'kmousetool_off')
+            Notify.show('Workday ended', f'Spent: {worktime}', 'kmousetool_off')
             workday_end = True
 
         sleep(5)
