@@ -9,6 +9,7 @@ verify_ssl = true
 notify2 = "*"
 arrow = "*"
 sqlalchemy = "*"
+psutil = "*"
 
 [requires]
 python_version = "3.7"
