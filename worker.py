@@ -26,28 +26,23 @@ def worker():
         work_today = [i for i in today if i.wifi.state is States.WORK]
         if not work_today and wifi.state == States.WORK:
             work_start = datetime.now().replace(microsecond=0) + UTC_FIX
-            Notify.show('WORK', f'Workday started at {work_start}', 'emoticon')
+            Notify.show("WORK", f"Workday started at {work_start}", "emoticon")
             workday_end = False
 
         last = today[-1] if today else None
         if last and last.wifi_id != wifi.id or locked != last.locked:
             if last and last.wifi_id != wifi.id:
                 if wifi.id == 0:
-                    Notify.show('WORK', 'Wifi disconnected')
+                    Notify.show("WORK", "Wifi disconnected")
                 else:
-                    Notify.show('WORK', f'Connected to {wifi.essid}')
+                    Notify.show("WORK", f"Connected to {wifi.essid}")
 
                 if last.wifi.state == States.WORK and wifi.state == States.HOME:
                     worktime = Tick.work_time(today)
                     Notify.show(
-                        'WORK',
-                        f'Welcome home\nSpent: {worktime}',
-                        'kmousetool_off'
+                        "WORK", f"Welcome home\nSpent: {worktime}", "kmousetool_off"
                     )
-            Tick.create(
-                wifi=wifi,
-                locked=locked
-            )
+            Tick.create(wifi=wifi, locked=locked)
         else:
             last.end = datetime.now()
             last.session.add(last)
@@ -55,7 +50,7 @@ def worker():
 
         worktime = Tick.work_time(today)
         if worktime >= WORKDAY and not workday_end:
-            Notify.show('WORK', f'Workday ended\nSpent: {worktime}', 'kmousetool_off')
+            Notify.show("WORK", f"Workday ended\nSpent: {worktime}", "kmousetool_off")
             workday_end = True
 
         sleep(5)
