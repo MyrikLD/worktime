@@ -29,9 +29,9 @@ def worker():
             Notify.show('WORK', f'Workday started at {work_start}', 'emoticon')
             workday_end = False
 
-        last = today[-1] if len(today) else None
-        if last.wifi_id != wifi.id or locked != last.locked:
-            if last.wifi_id != wifi.id:
+        last = today[-1] if today else None
+        if last and last.wifi_id != wifi.id or locked != last.locked:
+            if last and last.wifi_id != wifi.id:
                 if wifi.id == 0:
                     Notify.show('WORK', 'Wifi disconnected')
                 else:
@@ -55,7 +55,7 @@ def worker():
 
         worktime = Tick.work_time(today)
         if worktime >= WORKDAY and not workday_end:
-            Notify.show('Workday ended', f'Spent: {worktime}', 'kmousetool_off')
+            Notify.show('WORK', f'Workday ended\nSpent: {worktime}', 'kmousetool_off')
             workday_end = True
 
         sleep(5)
