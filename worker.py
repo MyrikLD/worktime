@@ -38,11 +38,10 @@ def worker():
                     Notify.show('WORK', f'Connected to {wifi.essid}')
 
                 if last.wifi.state == States.WORK and wifi.state == States.HOME:
-                    Notify.show('WORK', 'Welcome home')
                     worktime = Tick.work_time(today)
                     Notify.show(
-                        'Welcome',
-                        f'\nSpent: {worktime}',
+                        'WORK',
+                        f'Welcome home\nSpent: {worktime}',
                         'kmousetool_off'
                     )
             Tick.create(
