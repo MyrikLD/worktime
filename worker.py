@@ -30,12 +30,12 @@ def worker():
             workday_end = False
 
         last = today[-1] if len(today) else None
-        if last.wifi_id != wifi.id or locked != (last.wifi.state == States.REST):
+        if last.wifi_id != wifi.id or locked != last.locked:
             if last.wifi_id != wifi.id:
-                if wifi.id == 1:
+                if wifi.id == 0:
                     Notify.show('WORK', 'Wifi disconnected')
                 else:
-                    Notify.show('WORK', f'Changed to {wifi.essid}')
+                    Notify.show('WORK', f'Connected to {wifi.essid}')
 
                 if last.wifi.state == States.WORK and wifi.state == States.HOME:
                     Notify.show('WORK', 'Welcome home')
